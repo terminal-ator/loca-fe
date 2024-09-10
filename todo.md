@@ -1,0 +1,14 @@
+- update twilio accountd
+- create signup flow
+- add feedback button on all screens
+- add pincode screen after app login
+- ability to change pincode
+- add kred logic
+- add pull to refresh
+- add onboarding marketing
+- create a simple website
+- add user profile
+- add notifications
+- launch
+
+- read hooked take notes
