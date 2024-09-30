@@ -20,10 +20,10 @@ const AuthIndex = () => {
   const mutatePhone = useMutation({
     mutationFn: (phone: string) => getAccountByPhone(phone),
     onSuccess: (data) => {
-      console.log(data);
       setAuthPhone("+91" + phone);
       if (data.error) {
         // user doesn't exist
+        setUser({ phone: "+91" + phone, id: "", name: "" });
         router.push("auth/new");
       } else if (data.user) {
         setUser(data.user);
@@ -45,17 +45,21 @@ const AuthIndex = () => {
 
   return (
     <SafeAreaView>
-      <YStack padding="$4">
+      <YStack padding="$4" gap="$2">
         <Text>Get started </Text>
         <Text>Enter your mobile number</Text>
         <Input
           onChangeText={(e) => {
             setPhone(e);
           }}
-          placeholder="xxxxxxxxxx"
+          placeholder="XXXXXXXXX"
         />
         {err && <Text color="red">{err}</Text>}
-        <Button disabled={mutatePhone.isLoading} onPress={onContinue}>
+        <Button
+          theme={"blue"}
+          disabled={mutatePhone.isLoading}
+          onPress={onContinue}
+        >
           {mutatePhone.isLoading ? <Spinner /> : ""}
           Continue
         </Button>

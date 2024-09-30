@@ -1,5 +1,4 @@
 import { getPostsByPincode } from "@/api";
-import { strings } from "@/assets/strings";
 import PostItem from "@/components/PostItem";
 import useConfStore from "@/stores/conf";
 import usePincodeStore from "@/stores/pincode";
@@ -42,45 +41,41 @@ export default function HomeScreen() {
   if (isError) return <Text>Error!</Text>;
 
   return (
-    <>
-      <Theme name="light">
-        <YStack backgroundColor={"white"} flex={1} padding={"$2"}>
-          <YStack>
-            <H4 marginBottom={"$2"} color={"black"}>
-              {`Happening in `}
-              <Link
-                style={{ color: "red", textDecorationLine: "underline" }}
-                href={`/location`}
-              >
-                {seletedPincode}
-              </Link>
-            </H4>
-            {data && data?.length < 1 && (
-              <>
-                <Text>There are no posts in this pincode</Text>
-                <Button
-                  alignSelf="center"
-                  width={"$8"}
-                  onPress={() => {
-                    refetch();
-                  }}
-                >
-                  Retry
-                </Button>
-              </>
-            )}
-            <FlatList
-              style={{ marginBottom: 30 }}
-              refreshing={isLoading}
-              onRefresh={refetch}
-              data={data}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <PostItem item={item} />}
-            />
-          </YStack>
-        </YStack>
-      </Theme>
-    </>
+    <YStack backgroundColor={"white"} flex={1} padding={"$2"}>
+      <YStack>
+        <H4 marginBottom={"$2"} color={"black"}>
+          {`Happening in `}
+          <Link
+            style={{ color: "red", textDecorationLine: "underline" }}
+            href={`/location`}
+          >
+            {seletedPincode}
+          </Link>
+        </H4>
+        {data && data?.length < 1 && (
+          <>
+            <Text>There are no posts in this pincode</Text>
+            <Button
+              alignSelf="center"
+              width={"$8"}
+              onPress={() => {
+                refetch();
+              }}
+            >
+              Retry
+            </Button>
+          </>
+        )}
+        <FlatList
+          style={{ marginBottom: 30 }}
+          refreshing={isLoading}
+          onRefresh={refetch}
+          data={data}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <PostItem item={item} />}
+        />
+      </YStack>
+    </YStack>
   );
 }
 

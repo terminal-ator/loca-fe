@@ -11,9 +11,9 @@ export default function TabLayout() {
   const { authUser } = useAuthStore();
   const router = useRouter();
 
-  // if (!authUser) {
-  //   return <Redirect href="/auth" />;
-  // }
+  if (!authUser) {
+    return <Redirect href="/auth" />;
+  }
 
   return (
     <Tabs

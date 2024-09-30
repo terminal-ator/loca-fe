@@ -11,7 +11,7 @@ const LocationPage = () => {
 
   const handleSave = () => {
     setErr("");
-    console.log(pincode);
+
     // validate pincode size
     if (pincode.length !== 6) {
       setErr("Pincode must be 6 digits");
@@ -30,9 +30,7 @@ const LocationPage = () => {
         placeholder="Enter your pincode"
       />
       <Text color={"red"}>{err}</Text>
-      <Button theme={"gray"} onPress={handleSave}>
-        Save
-      </Button>
+      <Button onPress={handleSave}>Save</Button>
     </YStack>
   );
 };

@@ -1,25 +1,34 @@
-import { signIn } from "@/api";
+import { signIn, signUp } from "@/api";
 import useAuthStore from "@/stores/auth";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { Button, Input, Spinner, Text, YStack } from "tamagui";
 
-export default function AuthOld() {
+export default function AuthNewF() {
   const [otp, setOTP] = useState("");
-  const { currentUser, setAuthUser, setAuthToken, setAuthAccount } =
+  const { currentUser, signUpData, setAuthUser, setAuthToken, setAuthAccount } =
     useAuthStore();
   const router = useRouter();
 
   const mutateSignIn = useMutation({
-    mutationFn: ({ phone, code }: { phone: string; code: string }) =>
-      signIn(phone, code),
+    mutationFn: ({
+      phone,
+      code,
+      name,
+      username,
+    }: {
+      phone: string;
+      code: string;
+      name: string;
+      username: string;
+    }) => signUp(phone, code, name, username),
     onSuccess: (data) => {
       if (data.error) {
         return;
       }
-      if (!data.user || !data.sessionID || !data.account) return;
 
+      if (!data.user || !data.sessionID || !data.account) return;
       setAuthUser(data.user);
       setAuthToken(data.sessionID);
       setAuthAccount(data.account);
@@ -28,8 +37,14 @@ export default function AuthOld() {
   });
 
   const handleSubmit = () => {
+    const { name, username } = signUpData;
     if (currentUser)
-      mutateSignIn.mutate({ phone: currentUser?.phone, code: otp });
+      mutateSignIn.mutate({
+        phone: currentUser?.phone,
+        code: otp,
+        name,
+        username,
+      });
   };
 
   return (

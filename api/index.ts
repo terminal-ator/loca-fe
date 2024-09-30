@@ -1,17 +1,17 @@
 import base from './base';
-import { InitSignupResponse, PostStatsType, PostType, SignInResponse } from './types';
+import { Account, InitSignupResponse, PostStatsType, PostType, SignInResponse } from './types';
 
 export const getPostsByPincode = async ( pincode: string = '203207'): Promise<PostType[]> => {
-  console.log(pincode);
+  
   const { data } = await base.get(`/posts/${pincode}`);
-  console.log("What is this?", data);
+  
   return data as PostType[];
 };
 
 export const getPostByAccount = async ( accountId: string = 'cd54916f-9aae-4081-998f-f266b2caaf83'): Promise<PostType[]> => {
-  console.log(accountId);
+  
   const { data } = await base.get(`/accounts/posts/${accountId}`);
-  console.log("What is this?", data);
+  
   return data as PostType[];
 };
 
@@ -22,9 +22,9 @@ export const getPostStats = async ( postId: string ): Promise<PostStatsType> => 
     
 }
 
-export const makeEffect = async ( {postId, up}: { postId: string, up: string }): Promise<void> => {
-    console.log(postId, up);
-    await base.post(`/effect/${postId}/cd54916f-9aae-4081-998f-f266b2caaf83/${up}`);
+export const makeEffect = async ( {postId, up, accountId}: {accountId: string,  postId: string, up: string }): Promise<void> => {
+    
+    await base.post(`/effect/${postId}/${accountId}/${up}`);
 }
 
 export const getPost = async ( postId: string ): Promise<PostType> => {
@@ -32,12 +32,15 @@ export const getPost = async ( postId: string ): Promise<PostType> => {
   return data as PostType;
 };
 
-export const createPost = async ( { content, pincode, accountId }: { content: string, pincode: string, accountId: string }): Promise<PostType> => {
+export const createPost = async ( {sess, content, pincode, accountId }: { sess: string ,content: string, pincode: string, accountId: string }): Promise<PostType> => {
+  
   const { data } = await base.post(`/posts/${pincode}/${accountId}`, { content }, {
     headers: {
-      "Authorization": 'Bearer fake_session_001',
+      "Authorization": `Bearer ${sess}`,
     }
   });
+
+  return data[0];
 }
 
 export const getReplies = async ( postId: string ): Promise<PostType[]> => {
@@ -45,30 +48,47 @@ export const getReplies = async ( postId: string ): Promise<PostType[]> => {
   return data as PostType[];
 }
 
-export const createReply = async ( { content, postId, accountId }: { content: string, postId: string, accountId: string }): Promise<PostType> => {
+export const createReply = async ( { sess, content, postId, accountId }: { sess:string, content: string, postId: string, accountId: string }): Promise<PostType> => {
   const { data } = await base.post(`/comments/${postId}/${accountId}`, { content }, {
     headers: {
-      "Authorization": 'Bearer fake_session_001',
+      "Authorization": `Bearer ${sess}`,
     }
   });
   return data as PostType;
 }
 
 export const getAccountByPhone = async (phone: string): Promise<InitSignupResponse> => {
-  console.log("Getting phone data", phone);
+  
   const { data } = await base.get(`/users/init/${phone}`);
   return data as InitSignupResponse;
 }
 
 export const requestOTP = async (phone: string): Promise<InitSignupResponse> => {
-  console.log("Getting phone data", phone);
+  
   const { data } = await base.post(`/users/send-code/${phone}`);
   return data as InitSignupResponse;
 }
 
 export const signIn = async (phone: string, code: string): Promise<SignInResponse> => {
-  console.log("Signing in", phone, code);
+  
   const { data } = await base.post('/users/login', { phone, code });
   return data as SignInResponse;
 }
 
+export const signUp = async ( phone: string, code: string, name: string, username: string): Promise<SignInResponse> =>{
+  const { data } = await base.post('/users/signup', { phone, code, name, username })
+  return data as SignInResponse;
+}
+
+export const checkUsername = async (username: string): Promise<boolean> => {
+  const { data } = await base.get(`/users/check/${username}`);
+  
+  return data.available as boolean;
+}
+
+
+export const getAccountById = async (id: string): Promise<Account> => {
+  // console.log("fetching account by id")
+  const { data } = await base.get(`/accounts/fetch/${id}`);
+  return data as Account;
+}

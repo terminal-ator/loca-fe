@@ -11,9 +11,11 @@ import { H1, Paragraph, Theme, YStack, H3, XStack, Input } from "tamagui";
 const PostScreen = () => {
   const { id } = useLocalSearchParams();
   if (typeof id !== "string") return <H1>Not a string</H1>;
-  const { data, isLoading } = usePostByID(id);
+  const { data, isLoading, isError } = usePostByID(id);
 
   if (isLoading) return <H3>Loading</H3>;
+  if (!data) return <H3>No Post Found</H3>;
+  if (isError) return <H3>Error while fetching the post</H3>;
   if (!id) return <H1>No id</H1>;
 
   return (
@@ -31,7 +33,7 @@ const PostScreen = () => {
             </XStack>
           </Link>
         </YStack>
-        <YStack padding={"$4"}>
+        <YStack padding={"$4"} flex={1}>
           <CommentList postId={id} />
         </YStack>
       </YStack>

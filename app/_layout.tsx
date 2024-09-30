@@ -39,8 +39,8 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={client}>
-      <TamaguiProvider config={tconfig}>
+    <TamaguiProvider config={tconfig}>
+      <QueryClientProvider client={client}>
         <Theme name="light">
           <Stack>
             <Stack.Screen name="auth" options={{ headerShown: false }} />
@@ -51,14 +51,18 @@ export default function RootLayout() {
               options={{ title: "New Post", presentation: "modal" }}
             />
             <Stack.Screen
+              name="other/[id]"
+              options={{ title: "Profile", presentation: "modal" }}
+            />
+            <Stack.Screen
               name="location"
               options={{ title: "Change Location" }}
             />
             <Stack.Screen name="+not-found" />
           </Stack>
         </Theme>
-      </TamaguiProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </TamaguiProvider>
   );
 }
 

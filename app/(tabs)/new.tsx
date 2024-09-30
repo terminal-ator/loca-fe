@@ -1,15 +1,29 @@
 import { createPost, createReply } from "@/api";
+import useAuthStore from "@/stores/auth";
 import useConfStore from "@/stores/conf";
 import usePincodeStore from "@/stores/pincode";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useMutation, useQueryClient } from "react-query";
-import { Button, H1, Input, Paragraph, TextArea, Theme, YStack } from "tamagui";
+import {
+  Button,
+  H1,
+  Input,
+  Paragraph,
+  TextArea,
+  Theme,
+  YStack,
+  XStack,
+  Separator,
+} from "tamagui";
+import { Ionicons } from "@expo/vector-icons";
+import UserBar from "@/components/UserBar";
 
 const NewPost = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { authAccount, authToken } = useAuthStore();
   const { invalidateHasAdded } = useConfStore();
   const { seletedPincode: pincode } = usePincodeStore();
   const [content, setContent] = useState("");
@@ -20,12 +34,13 @@ const NewPost = () => {
       createPost({
         content: c,
         pincode,
-        accountId: "cd54916f-9aae-4081-998f-f266b2caaf83",
+        accountId: authAccount?.id!!,
+        sess: authToken!!,
       }),
     onSuccess(data, variables, context) {
-      // console.log(data);
       invalidateHasAdded();
-      router.back();
+      router.replace("/");
+      router.push(`/post/${data.id}`);
     },
   });
 
@@ -39,27 +54,41 @@ const NewPost = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Theme name="light">
-        <YStack padding={"$2"} gap={"$2"}>
-          <Button
-            disabled={!content || content.length < 1}
-            theme={"blue"}
-            alignSelf="flex-end"
-            width={"max-content"}
-            onPress={onPress}
-          >
-            Post
-          </Button>
-
-          <Paragraph>
-            {`Posting in `}
-            <Link
-              style={{ color: "red", textDecorationLine: "underline" }}
-              href={`/location`}
+        <YStack padding="$4" gap="$4" flex={1}>
+          <XStack justifyContent="space-between" alignItems="center">
+            <Button
+              theme="gray"
+              icon={<Ionicons name="close" size={24} />}
+              onPress={() => router.back()}
+            />
+            <Button
+              disabled={!content || content.length < 1}
+              theme="blue"
+              onPress={onPress}
             >
-              {pincode}
-            </Link>
-            {` as Tushar`}
-          </Paragraph>
+              Post
+            </Button>
+          </XStack>
+
+          <Separator />
+
+          <XStack alignItems="center" gap="$2">
+            <Ionicons name="location" size={20} color="gray" />
+            <Paragraph>
+              Posting in{" "}
+              <Link
+                style={{
+                  color: "blue",
+                  fontWeight: "bold",
+                }}
+                href="/location"
+              >
+                {pincode}
+              </Link>
+            </Paragraph>
+          </XStack>
+
+          <UserBar item={authAccount} />
 
           <TextArea
             value={content}
@@ -67,6 +96,7 @@ const NewPost = () => {
             rows={6}
             verticalAlign="top"
             placeholder="What's on your mind?"
+            autoFocus
           />
         </YStack>
       </Theme>

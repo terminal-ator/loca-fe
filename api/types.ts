@@ -8,6 +8,7 @@ export type PostType = {
     content: string;
     content_type: string;
     addn_data: {} | null;
+    acc_id: string;
     deleted: boolean;
     username: string;
     name: string;

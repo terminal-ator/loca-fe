@@ -1,15 +1,27 @@
 import { createPost, createReply } from "@/api";
 import PostItem, { SimplePostItem } from "@/components/PostItem";
+import UserBar from "@/components/UserBar";
 import usePostByID from "@/hooks/usePostByID";
+import useAuthStore from "@/stores/auth";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { Button, H1, Input, Paragraph, TextArea, Theme, YStack } from "tamagui";
+import {
+  Button,
+  H1,
+  Input,
+  Paragraph,
+  TextArea,
+  Theme,
+  View,
+  YStack,
+} from "tamagui";
 
 const NewPost = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [content, setContent] = useState("");
+  const { authAccount, authToken } = useAuthStore();
   const qc = useQueryClient();
   const { data: replyPost, isLoading } = usePostByID(
     typeof id === "string" ? id : undefined
@@ -21,9 +33,10 @@ const NewPost = () => {
         content: c,
         pincode: "203207",
         accountId: "cd54916f-9aae-4081-998f-f266b2caaf83",
+        sess: authToken!!,
       }),
     onSuccess(data, variables, context) {
-      // console.log(data);
+      //
       router.back();
     },
   });
@@ -33,10 +46,10 @@ const NewPost = () => {
       createReply({
         content: c,
         postId: id as string,
-        accountId: "cd54916f-9aae-4081-998f-f266b2caaf83",
+        accountId: authAccount?.id!!,
+        sess: authToken!!,
       }),
     onSuccess(data, variables, context) {
-      console.log(data);
       router.back();
     },
   });
@@ -57,7 +70,7 @@ const NewPost = () => {
           headerRight: () => (
             <Button
               disabled={!content || content.length < 1}
-              theme={"red"}
+              theme={"blue"}
               alignSelf="flex-end"
               width={"max-content"}
               onPress={onPress}
@@ -74,13 +87,22 @@ const NewPost = () => {
           <Paragraph>Replying to </Paragraph>
         )}
         {replyPost ? <SimplePostItem item={replyPost} /> : null}
-        <TextArea
-          value={content}
-          onChangeText={(text) => setContent(text)}
-          rows={6}
-          verticalAlign="top"
-          placeholder="reply"
-        />
+        <View
+          borderWidth={1}
+          borderColor="$gray10"
+          padding={"$2"}
+          borderRadius={"$4"}
+        >
+          <UserBar item={authAccount} />
+          <TextArea
+            marginTop={"$2"}
+            value={content}
+            onChangeText={(text) => setContent(text)}
+            rows={6}
+            verticalAlign="top"
+            placeholder="reply"
+          />
+        </View>
       </YStack>
     </Theme>
   );

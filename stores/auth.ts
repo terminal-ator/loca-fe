@@ -3,6 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+interface UserSignUp{
+    username: string;
+    name: string;
+    referral?: string;
+}
+
+
 interface AuthStore {
     currentPhone: string;
     setPhone: (phone: string) => void;
@@ -10,6 +17,8 @@ interface AuthStore {
     authUser: UserType | null;
     authToken: string | null;
     authAccount: Account | null;
+    signUpData: UserSignUp;
+    setUserSignUpData: (data: UserSignUp) => void;
     setAuthAccount: (account: Account) => void;
     setAuthUser: (user: UserType) => void;
     setAuthToken: (token: string) => void;
@@ -30,6 +39,12 @@ const useAuthStore = create<AuthStore>()(
         is_main: true,
         username: 'BigDawg'
     },
+    signUpData: {
+        name:"",
+        username: "",
+        referral:""
+    },
+    setUserSignUpData: (data) => {set({ signUpData: data })},
     setAuthAccount: (account: Account) => set({ authAccount: account }),
     setPhone: (phone: string) => set({ currentPhone: phone }),
     setUser: (user: UserType) => set({ currentUser: user }),
